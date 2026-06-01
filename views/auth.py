@@ -5,6 +5,8 @@ from services.vision import MP_OK
 init_db()
 
 def show():
+    from services.voice_detector import get_status
+    vs = get_status()
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap');
