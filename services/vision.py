@@ -3,6 +3,8 @@ import numpy as np
 import time
 import threading
 from collections import deque
+from services.sound import play_tts
+from services.voice_detector import get_status
 
 try:
     import mediapipe as mp
