@@ -1,5 +1,6 @@
 import streamlit as st
 from database import init_db, create_user, login_user
+from services.vision import MP_OK
 
 init_db()
 
