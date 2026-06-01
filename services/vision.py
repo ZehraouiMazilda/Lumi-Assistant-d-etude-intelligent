@@ -106,15 +106,18 @@ shared_state = ConcentrationState()
 
 # ── Son ───────────────────────────────────────────────────────
 def _play_alert(message: str):
-    """Délègue le TTS au voice_detector — bloqué si Lumi est en mode actif."""
+    """Délègue le TTS au module sound — bloqué si Lumi est en mode actif."""
     try:
-        from services.voice_detector import play_tts, get_status
+        # On importe localement ici pour éviter le NameError au démarrage de l'app
+        from services.voice_detector import get_status
+        
         vs = get_status()
-        # Bloquer seulement si Lumi parle activement (pas pendant mode actif)
+        # Bloquer seulement si Lumi parle activement
         if vs.get("is_speaking"):
             return
         play_tts(message)
-    except Exception:
+    except Exception as e:
+        print(f"[VISION] Échec play_alert, exécution du bip de secours : {e}", flush=True)
         def _beep():
             try:
                 import winsound
