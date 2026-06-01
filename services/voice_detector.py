@@ -116,8 +116,15 @@ _HALLUCINATIONS = [
 _WAKE = ["lumi", "loumi", "loumy", "lumy", "lumie", "lomy"]
 
 def _loop():
-    import sounddevice as sd
-    import soundfile as sf
+    # Évite le crash si sounddevice ne trouve aucun périphérique audio (sur Streamlit Cloud)
+    try:
+        import sounddevice as sd
+        import soundfile as sf
+    except OSError as e:
+        print(f"[VOICE ERROR] Impossible d'initialiser sounddevice (pas de carte son sur le serveur) : {e}", flush=True)
+        with voice_state.lock:
+            voice_state.last_transcript = "[Mode Vocal Désactivé sur le Cloud]"
+        return  # Arrête le thread proprement au lieu de faire crash toute l'application
 
     SAMPLERATE = 16000
     DURATION   = 10  # secondes
@@ -132,7 +139,7 @@ def _loop():
             lumi_active   = voice_state.lumi_mode
             last_activity = voice_state.last_lumi_activity
 
-        # Timeout inactivité Lumi — seulement si pas en train d'enregistrer/parler
+        # Timeout inactivité Lumi
         with voice_state.lock:
             is_rec  = voice_state.is_recording
             is_spk  = voice_state.is_speaking
@@ -159,6 +166,7 @@ def _loop():
             with voice_state.lock:
                 voice_state.is_recording = True
 
+            # Double sécurité lors de l'appel à la carte son
             audio = sd.rec(int(DURATION * SAMPLERATE),
                            samplerate=SAMPLERATE, channels=1, dtype='float32')
             sd.wait()
@@ -167,7 +175,6 @@ def _loop():
                 voice_state.is_recording = False
                 was_speaking = voice_state.is_speaking
 
-            # Jeter le chunk si Lumi a parlé pendant l enregistrement
             if was_speaking:
                 continue
 
@@ -184,8 +191,8 @@ def _loop():
         except Exception as e:
             with voice_state.lock:
                 voice_state.is_recording = False
-                voice_state.last_transcript = f"[Erreur: {e}]"
-            time.sleep(1)
+                voice_state.last_transcript = f"[Erreur Audio/Micro: {e}]"
+            time.sleep(2)
 
 def _transcribe(path: str):
     try:
