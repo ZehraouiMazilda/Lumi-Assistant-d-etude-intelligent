@@ -5,6 +5,35 @@ import threading
 from collections import deque
 from services.sound import play_tts
 from services.voice_detector import get_status
+import mediapipe as mp
+
+try:
+    # Utilisation de l'import direct de la classe FaceMesh pour éviter le bug d'attribut
+    from mediapipe.python.solutions.face_mesh import FaceMesh
+    
+    _face_mesh = FaceMesh(
+        max_num_faces=1,
+        refine_landmarks=True,
+        min_detection_confidence=0.3,
+        min_tracking_confidence=0.3,
+    )
+    MP_OK = True
+    print("[VISION] MediaPipe FaceMesh initialisé avec succès !", flush=True)
+except Exception as e:
+    print(f"[VISION ERROR] Erreur lors de l'initialisation directe : {e}", flush=True)
+    try:
+        # Solution de secours alternative si l'import direct échoue
+        _face_mesh = mp.solutions.face_mesh.FaceMesh(
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.3,
+            min_tracking_confidence=0.3,
+        )
+        MP_OK = True
+    except Exception as e2:
+        print(f"[VISION ERROR] Échec de la solution de secours : {e2}", flush=True)
+        MP_OK = False
+        _face_mesh = None
 
 try:
     import mediapipe as mp
