@@ -3,9 +3,8 @@ import numpy as np
 import time
 import threading
 from collections import deque
-import mediapipe as mp
 from services.sound import play_tts
-from services.voice_detector import get_status
+import mediapipe as mp
 
 # ── INITIALISATION SÉCURISÉE DE MEDIAPIPE ────────────────────────────
 try:
@@ -108,7 +107,7 @@ shared_state = ConcentrationState()
 def _play_alert(message: str):
     """Délègue le TTS au module sound — bloqué si Lumi est en mode actif."""
     try:
-        # On importe localement ici pour éviter le NameError au démarrage de l'app
+        # C'est cet import local qui fait tout le travail proprement et au bon moment !
         from services.voice_detector import get_status
         
         vs = get_status()
