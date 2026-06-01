@@ -3,9 +3,9 @@ import numpy as np
 import time
 import threading
 from collections import deque
+import mediapipe as mp
 from services.sound import play_tts
 from services.voice_detector import get_status
-import mediapipe as mp
 
 # ── INITIALISATION SÉCURISÉE DE MEDIAPIPE ────────────────────────────
 try:
