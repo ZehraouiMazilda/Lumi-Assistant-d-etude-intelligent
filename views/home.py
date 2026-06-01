@@ -269,7 +269,7 @@ def show():
     st.divider()
 
     # ── SESSIONS ─────────────────────────────────────────────
-    st.markdown(
+   st.markdown(
         '<div class="eyebrow" style="text-align:center;">Historique</div>',
         unsafe_allow_html=True,
     )
@@ -277,7 +277,6 @@ def show():
         '<div class="section-title" style="text-align:center;">Mes sessions</div>',
         unsafe_allow_html=True,
     )
-
     sessions = get_all_session_stats(user_id=st.session_state["user"]["id"])
 
     if sessions:
