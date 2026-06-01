@@ -41,46 +41,6 @@ def set_callbacks(on_lumi_question=None, on_alert=None):
     _on_lumi_question = on_lumi_question
     _on_alert = on_alert
 
-def play_tts(text: str):
-    def _run():
-        tmp = None
-        with voice_state.lock:
-            voice_state.is_speaking = True
-        try:
-            from gtts import gTTS
-            import tempfile, subprocess
-            buf = io.BytesIO()
-            gTTS(text=str(text)[:150], lang='fr', slow=False).write_to_fp(buf)
-            with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as f:
-                f.write(buf.getvalue())
-                tmp = f.name
-            ps = (
-                "Add-Type -AssemblyName presentationCore; "
-                "$mp = New-Object System.Windows.Media.MediaPlayer; "
-                f"$mp.Open([uri]'{tmp}'); "
-                "$mp.Play(); "
-                "Start-Sleep 1; "
-                "$dur = $mp.NaturalDuration.TimeSpan.TotalSeconds; "
-                "if($dur -gt 0){ Start-Sleep ([int]$dur + 1) }else{ Start-Sleep 10 }; "
-                "$mp.Stop(); $mp.Close()"
-            )
-            subprocess.run(['powershell', '-NoProfile', '-c', ps],
-                           timeout=60, capture_output=True)
-        except Exception:
-            try:
-                import winsound
-                winsound.Beep(880, 150)
-            except: pass
-        finally:
-            with voice_state.lock:
-                voice_state.is_speaking = False
-                # Reset le timer inactivité après que Lumi finit de parler
-                if voice_state.lumi_mode:
-                    voice_state.last_lumi_activity = time.time()
-            if tmp:
-                try: os.unlink(tmp)
-                except: pass
-    threading.Thread(target=_run, daemon=True).start()
 
 def start_listening():
     # Vérifier si un thread "lumi-voice-loop" est déjà vivant dans ce process
@@ -300,4 +260,4 @@ def get_status() -> dict:
             "last_lumi_activity": voice_state.last_lumi_activity,
         }
 
-_play_tts = play_tts
+
