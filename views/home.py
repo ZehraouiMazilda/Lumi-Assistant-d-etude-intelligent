@@ -278,7 +278,7 @@ def show():
         unsafe_allow_html=True,
     )
 
-    sessions = get_all_session_stats()
+    sessions = get_all_session_stats(user_id=st.session_state["user"]["id"])
 
     if sessions:
         for i in range(0, len(sessions), 2):
