@@ -7,6 +7,7 @@ import os
 import io
 import json
 import numpy as np
+from services.sound import play_tts
 from dotenv import load_dotenv
 load_dotenv()
 
