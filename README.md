@@ -13,11 +13,32 @@
 ![Groq](https://img.shields.io/badge/Groq-Llama_3.1-9b6dff?style=flat-square)
 ![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10-9b6dff?style=flat-square)
 ![License](https://img.shields.io/badge/Licence-MIT-2d2040?style=flat-square)
+![Last Update](https://img.shields.io/badge/Last_Update-Juin_2026-9b6dff?style=flat-square)
 
 ---
 
 *Master SISE 2025–2026*
 **Aya Mecheri · Maissa Lajimi · Mazilda Zehraoui**
+
+</div>
+
+---
+
+## ✦ Aperçu
+
+<div align="center">
+
+| Authentification | Accueil |
+|:---:|:---:|
+| ![Auth](docs/screenshots/auth.png) | ![Home](docs/screenshots/home.png) |
+
+| Mode d'emploi | Historique des sessions |
+|:---:|:---:|
+| ![How](docs/screenshots/how.png) | ![Sessions](docs/screenshots/session.png) |
+
+| Nouvelle session |  |
+|:---:|:---:|
+| ![New Session](docs/screenshots/new_session.png) | |
 
 </div>
 
@@ -42,6 +63,25 @@
 │                                                     │
 └─────────────────────────────────────────────────────┘
 ```
+
+---
+
+## ✦ Démo en ligne
+
+🔗 **[Essayer Lumi sur Streamlit](https://m3dc3mfjfxh4ttqcfwzz3j.streamlit.app/)**
+
+> ⚠️ **Limitations de la démo en ligne**
+> Streamlit Cloud étant un serveur distant, il ne dispose pas d'accès à la webcam ni au microphone.
+> Les fonctionnalités de détection et d'assistant vocal nécessitent une **installation locale**.
+
+| Fonctionnalité | Démo en ligne | Local |
+|---|:---:|:---:|
+| 💬 Chat contextuel (LLM) | ✅ | ✅ |
+| 📊 Analytics de session | ✅ | ✅ |
+| 🔐 Authentification sécurisée | ✅ | ✅ |
+| 📄 Export résumé PDF | ✅ | ✅ |
+| 👁 Détection webcam (MediaPipe) | ❌ | ✅ |
+| 🎙 Assistant vocal (Whisper) | ❌ | ✅ |
 
 ---
 
@@ -82,7 +122,7 @@
 
 ---
 
-## ✦ Installation
+## ✦ Installation locale
 
 ### Prérequis
 - Python 3.10+
@@ -137,25 +177,9 @@ lumi/
 │   └── sound.py              # Utilitaires audio
 │
 └── docs/
+    ├── screenshots/          # Captures d'écran
     └── README_PAGES.md       # Documentation détaillée des pages
 ```
-
----
-
-## ✦ Base de données
-
-```
-sessions ──────────── sources
-    │                     │
-    ├── chat_messages      ├── notes
-    ├── transcripts        
-    ├── timeline_points   
-    ├── session_stats     
-    ├── session_tasks     
-    └── users             
-```
-
-9 tables SQLite gérées automatiquement au démarrage via `init_db()`.
 
 ---
 
@@ -174,5 +198,5 @@ La documentation complète des pages est disponible dans [`docs/README_PAGES.md`
 ---
 
 <div align="center">
-<sub>● LUMI · Master SISE 2025–2026 · Python · Streamlit · Groq · MediaPipe</sub>
+<sub>● LUMI · Master SISE 2025–2026 · Dernière mise à jour : Juin 2026 · Python · Streamlit · Groq · MediaPipe</sub>
 </div>
