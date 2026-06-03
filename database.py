@@ -169,12 +169,31 @@ def update_session(session_id, theme=None, duration_sec=None):
         conn.execute("UPDATE sessions SET duration_sec=?, updated_at=datetime('now') WHERE id=?", (duration_sec, session_id))
     conn.commit(); conn.close()
 
-def get_all_sessions(user_id=None):
+def get_all_session_stats(user_id=None):
     conn = get_conn()
     if user_id:
-        rows = conn.execute("SELECT * FROM sessions WHERE user_id=? ORDER BY updated_at DESC", (user_id,)).fetchall()
+        query = """
+            SELECT s.id, s.title, s.theme, s.duration_sec, s.created_at,
+                   ss.score_avg, ss.score_min, ss.score_max,
+                   ss.alert_eyes, ss.alert_yaw, ss.alert_pitch, ss.alert_no_face,
+                   ss.lumi_calls, ss.sources_count, ss.notes_count, ss.summary
+            FROM sessions s
+            LEFT JOIN session_stats ss ON s.id = ss.session_id
+            WHERE s.user_id = ?
+            ORDER BY s.created_at DESC
+        """
+        rows = conn.execute(query, (user_id,)).fetchall()
     else:
-        rows = conn.execute("SELECT * FROM sessions ORDER BY updated_at DESC").fetchall()
+        query = """
+            SELECT s.id, s.title, s.theme, s.duration_sec, s.created_at,
+                   ss.score_avg, ss.score_min, ss.score_max,
+                   ss.alert_eyes, ss.alert_yaw, ss.alert_pitch, ss.alert_no_face,
+                   ss.lumi_calls, ss.sources_count, ss.notes_count, ss.summary
+            FROM sessions s
+            LEFT JOIN session_stats ss ON s.id = ss.session_id
+            ORDER BY s.created_at DESC
+        """
+        rows = conn.execute(query).fetchall()
     conn.close()
     return [dict(r) for r in rows]
 
