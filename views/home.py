@@ -56,7 +56,7 @@ def _score_color(s):
 
 
 def show():
-    # CSS minimal — juste ce que Streamlit ne peut pas faire nativement
+
     st.markdown(
         """
     <style>
