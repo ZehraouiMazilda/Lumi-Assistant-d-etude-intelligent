@@ -248,7 +248,7 @@ def show():
     # ── Init ─────────────────────────────────────────────────
     if not st.session_state.get("session_id"):
         title = st.session_state.get("new_session_title", "Nouvelle session")
-        sid   = create_session(title)
+        sid = create_session(title, user_id=st.session_state["user"]["id"])
         init_session_stats(sid)
         st.session_state.update({
             "session_id": sid, "session_title": title,
