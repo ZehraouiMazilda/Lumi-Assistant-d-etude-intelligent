@@ -4,7 +4,6 @@ import bcrypt
 import os
 from datetime import datetime
 
-import os
 DB_PATH = os.environ.get("DB_PATH", "lumi.db")
 
 def get_conn():
@@ -92,7 +91,6 @@ def init_db():
         FOREIGN KEY (session_id) REFERENCES sessions(id)
     )""")
 
-    # Timeline concentration (snapshot toutes les 30s)
     c.execute("""
     CREATE TABLE IF NOT EXISTS concentration_timeline (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -109,7 +107,6 @@ def init_db():
         FOREIGN KEY (session_id) REFERENCES sessions(id)
     )""")
 
-    # Stats résumé session (mise à jour au Quitter)
     c.execute("""
     CREATE TABLE IF NOT EXISTS session_stats (
         id                  INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -169,31 +166,12 @@ def update_session(session_id, theme=None, duration_sec=None):
         conn.execute("UPDATE sessions SET duration_sec=?, updated_at=datetime('now') WHERE id=?", (duration_sec, session_id))
     conn.commit(); conn.close()
 
-def get_all_session_stats(user_id=None):
+def get_all_sessions(user_id=None):
     conn = get_conn()
     if user_id:
-        query = """
-            SELECT s.id, s.title, s.theme, s.duration_sec, s.created_at,
-                   ss.score_avg, ss.score_min, ss.score_max,
-                   ss.alert_eyes, ss.alert_yaw, ss.alert_pitch, ss.alert_no_face,
-                   ss.lumi_calls, ss.sources_count, ss.notes_count, ss.summary
-            FROM sessions s
-            LEFT JOIN session_stats ss ON s.id = ss.session_id
-            WHERE s.user_id = ?
-            ORDER BY s.created_at DESC
-        """
-        rows = conn.execute(query, (user_id,)).fetchall()
+        rows = conn.execute("SELECT * FROM sessions WHERE user_id=? ORDER BY updated_at DESC", (user_id,)).fetchall()
     else:
-        query = """
-            SELECT s.id, s.title, s.theme, s.duration_sec, s.created_at,
-                   ss.score_avg, ss.score_min, ss.score_max,
-                   ss.alert_eyes, ss.alert_yaw, ss.alert_pitch, ss.alert_no_face,
-                   ss.lumi_calls, ss.sources_count, ss.notes_count, ss.summary
-            FROM sessions s
-            LEFT JOIN session_stats ss ON s.id = ss.session_id
-            ORDER BY s.created_at DESC
-        """
-        rows = conn.execute(query).fetchall()
+        rows = conn.execute("SELECT * FROM sessions ORDER BY updated_at DESC").fetchall()
     conn.close()
     return [dict(r) for r in rows]
 
@@ -312,8 +290,7 @@ def get_timeline(session_id):
 # ── Session stats ──────────────────────────────────────────────
 def init_session_stats(session_id):
     conn = get_conn()
-    conn.execute("""
-        INSERT OR IGNORE INTO session_stats (session_id) VALUES (?)""", (session_id,))
+    conn.execute("INSERT OR IGNORE INTO session_stats (session_id) VALUES (?)", (session_id,))
     conn.commit(); conn.close()
 
 def increment_alert_stat(session_id, alert_type):
@@ -363,17 +340,30 @@ def get_session_stats(session_id):
     return dict(row) if row else {}
 
 def get_all_session_stats(user_id=None):
-    """Pour la home — toutes les sessions avec stats résumées."""
+    """Pour la home — sessions filtrées par user_id."""
     conn = get_conn()
-    query = """
-        SELECT s.id, s.title, s.theme, s.duration_sec, s.created_at,
-               ss.score_avg, ss.score_min, ss.score_max,
-               ss.alert_eyes, ss.alert_yaw, ss.alert_pitch, ss.alert_no_face,
-               ss.lumi_calls, ss.sources_count, ss.notes_count, ss.summary
-        FROM sessions s
-        LEFT JOIN session_stats ss ON s.id = ss.session_id
-        ORDER BY s.created_at DESC
-    """
-    rows = conn.execute(query).fetchall()
+    if user_id:
+        query = """
+            SELECT s.id, s.title, s.theme, s.duration_sec, s.created_at,
+                   ss.score_avg, ss.score_min, ss.score_max,
+                   ss.alert_eyes, ss.alert_yaw, ss.alert_pitch, ss.alert_no_face,
+                   ss.lumi_calls, ss.sources_count, ss.notes_count, ss.summary
+            FROM sessions s
+            LEFT JOIN session_stats ss ON s.id = ss.session_id
+            WHERE s.user_id = ?
+            ORDER BY s.created_at DESC
+        """
+        rows = conn.execute(query, (user_id,)).fetchall()
+    else:
+        query = """
+            SELECT s.id, s.title, s.theme, s.duration_sec, s.created_at,
+                   ss.score_avg, ss.score_min, ss.score_max,
+                   ss.alert_eyes, ss.alert_yaw, ss.alert_pitch, ss.alert_no_face,
+                   ss.lumi_calls, ss.sources_count, ss.notes_count, ss.summary
+            FROM sessions s
+            LEFT JOIN session_stats ss ON s.id = ss.session_id
+            ORDER BY s.created_at DESC
+        """
+        rows = conn.execute(query).fetchall()
     conn.close()
     return [dict(r) for r in rows]
