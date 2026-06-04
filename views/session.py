@@ -323,7 +323,7 @@ def show():
                 border-radius:10px;padding:10px 16px;margin-bottom:0.8rem;
                 font-family:'Bricolage Grotesque',sans-serif;font-size:0.78rem;
                 color:#fca5a5;line-height:1.6;">
-                ⚠️ <strong style="color:#ef4444;">Ne uploadez pas de documents sensibles</strong> —
+                ⚠️ <strong style="color:#ef4444;">Ne uploadez pas de documents sensibles</strong>:
                 Cette application est à but démonstratif, les fichiers sont stockés sans chiffrement.
             </div>
             """, unsafe_allow_html=True)
@@ -361,7 +361,7 @@ def show():
             border-radius:8px;padding:8px 12px;margin-bottom:0.5rem;
             font-family:'Bricolage Grotesque',sans-serif;font-size:0.72rem;
             color:#fca5a5;line-height:1.5;">
-            ⚠️ Pas de documents sensibles — application à but démonstratif, stockage non chiffré.
+            ⚠️ Pas de documents sensibles, application à but démonstratif, stockage non chiffré.
         </div>
         """, unsafe_allow_html=True)
         up = st.file_uploader("Source", type=["pdf","txt"],
