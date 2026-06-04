@@ -329,7 +329,7 @@ def show():
         </div>
         """, unsafe_allow_html=True)
         _, uc, _ = st.columns([1, 2, 1])
-       with uc:
+        with uc:
             st.markdown("""
             <div style="background:#1a0f0f;border:1px solid #7f1d1d;border-left:3px solid #ef4444;
                 border-radius:10px;padding:10px 16px;margin-bottom:0.8rem;
