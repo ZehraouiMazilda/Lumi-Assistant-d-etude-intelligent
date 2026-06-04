@@ -92,6 +92,25 @@ def show():
         </div>
         """, unsafe_allow_html=True)
 
+        st.markdown("""
+        <div style="
+            background: #1a0f0f;
+            border: 1px solid #7f1d1d;
+            border-left: 3px solid #ef4444;
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 1.2rem;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 0.78rem;
+            color: #fca5a5;
+            line-height: 1.6;
+        ">
+            ⚠️ <strong style="color:#ef4444;">Application de démonstration</strong> — 
+            Ne renseignez pas de données personnelles sensibles. 
+            Cette version est à usage académique uniquement.
+        </div>
+        """, unsafe_allow_html=True)
+
         # ── Tabs ─────────────────────────────────────────────
         st.markdown("""
         <div style="background:#0e0b1a;border:1px solid #1e1530;border-radius:12px;
