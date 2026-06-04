@@ -25,6 +25,8 @@ def show():
         justify-content: center;
     }
 
+    
+
     /* Inputs */
     .stTextInput input {
         background: #0e0b1a !important;
