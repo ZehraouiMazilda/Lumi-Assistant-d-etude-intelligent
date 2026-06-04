@@ -87,7 +87,6 @@ def _groq_summary(src_content, title):
     except: return "Bonjour ! Je suis Lumi."
 
 def _groq_tasks(src_content, title, notes):
-    """Génère des tâches à faire basées sur les sources et notes."""
     try:
         notes_str = "\n".join(f"- {n['clean_text'][:80]}" for n in notes[:5]) if notes else "Aucune note"
         prompt = (f"Sujet: '{title}'\nSources: {src_content[:2000]}\nNotes: {notes_str}\n\n"
@@ -157,7 +156,6 @@ def _setup_voice(sid, title, src_content):
             add_transcript(sid, text, mode="lumi")
             increment_alert_stat(sid, "lumi_call")
             play_tts(reply)
-            # Forcer mise à jour compteur
             st.session_state["_last_msg_count"] = len(get_chat_messages(sid)) - 1
         except Exception as e:
             print(f"[on_question error] {e}", flush=True)
@@ -187,24 +185,20 @@ def show():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap');
 
-    /* Reset fantômes home */
     .lumi-dot,.step-card,.step-num,.step-title,.step-desc,
     .sess-card,.sess-title,.sess-summary,.sess-meta,.sess-score,
     .pills,.pill,.eyebrow,.section-title { display:none !important; }
 
     .block-container { padding:1rem 2.5rem 2rem !important; max-width:100% !important; }
 
-    /* Métriques */
     [data-testid="stMetricValue"] { font-family:'Syne',sans-serif !important; font-size:1.6rem !important; font-weight:800 !important; }
     [data-testid="stMetricLabel"] { font-family:'Space Mono',monospace !important; font-size:0.55rem !important; color:#4a3560 !important; text-transform:uppercase !important; letter-spacing:0.1em !important; }
     [data-testid="metric-container"] { background:#13101e !important; border:1px solid #2d2040 !important; border-radius:12px !important; padding:0.6rem !important; }
 
-    /* Onglets */
     .stTabs [data-baseweb="tab-list"] { justify-content:center !important; background:#0e0b1a !important; border:1px solid #1e1530 !important; border-radius:12px !important; padding:5px !important; gap:6px !important; }
     .stTabs [data-baseweb="tab"] { font-family:'Syne',sans-serif !important; font-weight:700 !important; font-size:0.85rem !important; padding:8px 24px !important; border-radius:8px !important; color:#4a3560 !important; }
     .stTabs [aria-selected="true"] { background:linear-gradient(135deg,#9b6dff,#7c4fe0) !important; color:white !important; box-shadow:0 3px 10px rgba(155,109,255,0.35) !important; }
 
-    /* Chat stylé */
     .chat-wrap { display:flex; flex-direction:column; gap:10px; padding:6px 0; }
     .chat-row-u { display:flex; justify-content:flex-end; }
     .chat-row-l { display:flex; justify-content:flex-start; }
@@ -218,25 +212,20 @@ def show():
         text-transform:uppercase; letter-spacing:0.1em; margin-bottom:3px; }
     .chat-meta-r { text-align:right; }
 
-    /* Notes */
     .note-box { background:#13101e; border:1px solid #2d2040; border-radius:10px;
         padding:8px 12px; font-family:'Bricolage Grotesque',sans-serif;
         font-size:0.82rem; color:#e0d8ff; margin-bottom:5px; }
 
-    /* Tâches */
     .task-card { background:#13101e; border:1px solid #2d2040; border-radius:10px;
-        padding:9px 12px; margin-bottom:6px; display:flex;
-        align-items:center; gap:10px; }
+        padding:9px 12px; margin-bottom:6px; display:flex; align-items:center; gap:10px; }
     .task-text { font-family:'Bricolage Grotesque',sans-serif; font-size:0.83rem; color:#e0d8ff; flex:1; }
     .task-text-done { text-decoration:line-through; color:#4a3560; }
     .task-badge { font-family:'Space Mono',monospace; font-size:0.5rem;
-        letter-spacing:0.1em; text-transform:uppercase; padding:2px 8px;
-        border-radius:99px; }
+        letter-spacing:0.1em; text-transform:uppercase; padding:2px 8px; border-radius:99px; }
     .badge-haute { background:#3d1515; color:#ef4444; border:1px solid #7f1d1d; }
     .badge-moyenne { background:#2d1f0a; color:#f97316; border:1px solid #7c3a0a; }
     .badge-basse { background:#0d1f0d; color:#22c55e; border:1px solid #14532d; }
 
-    /* Src name sidebar */
     .src-name { font-family:'Bricolage Grotesque',sans-serif; font-size:0.8rem;
         color:#b89aff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:2px 0; }
 
@@ -267,7 +256,6 @@ def show():
     has_src = len(sources) > 0
     src_content = "\n\n".join(s.get("content","") for s in sources if s.get("content"))
 
-    # Voice démarre dès upload
     if has_src and not st.session_state.get("voice_started"):
         _setup_voice(sid, title, src_content)
         st.session_state["voice_started"] = True
@@ -335,7 +323,7 @@ def show():
                 border-radius:10px;padding:10px 16px;margin-bottom:0.8rem;
                 font-family:'Bricolage Grotesque',sans-serif;font-size:0.78rem;
                 color:#fca5a5;line-height:1.6;">
-                ⚠️ <strong style="color:#ef4444;">Ne uploadez pas de documents sensibles</strong>
+                ⚠️ <strong style="color:#ef4444;">Ne uploadez pas de documents sensibles</strong> —
                 Cette application est à but démonstratif, les fichiers sont stockés sans chiffrement.
             </div>
             """, unsafe_allow_html=True)
@@ -373,7 +361,7 @@ def show():
             border-radius:8px;padding:8px 12px;margin-bottom:0.5rem;
             font-family:'Bricolage Grotesque',sans-serif;font-size:0.72rem;
             color:#fca5a5;line-height:1.5;">
-            ⚠️ Pas de documents sensibles, stockage non chiffré.
+            ⚠️ Pas de documents sensibles — application à but démonstratif, stockage non chiffré.
         </div>
         """, unsafe_allow_html=True)
         up = st.file_uploader("Source", type=["pdf","txt"],
@@ -403,7 +391,6 @@ def show():
                 media_stream_constraints={"video":{"facingMode":"user"},"audio":False},
                 async_processing=True)
 
-            # Bouton Commencer — lance chrono + ready
             if not ready:
                 if st.button("▶  Commencer la session", key="start_session", use_container_width=True):
                     st.session_state["session_ready"] = True
@@ -503,7 +490,6 @@ def show():
             add_chat_message(sid, "assistant", summary)
             st.session_state["summary_done"] = True
 
-        # Chat stylé avec bulles centrées
         messages = get_chat_messages(sid)[-30:]
         st.markdown('<div class="chat-wrap">', unsafe_allow_html=True)
         for m in messages:
@@ -530,18 +516,15 @@ def show():
     # ── Onglet Résumé ──────────────────────────────────────────
     with tab_resume:
         resume_key = f"full_resume_{sid}"
-
         st.markdown('<div style="font-family:Space Mono,monospace;font-size:0.58rem;color:#9b6dff;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.8rem;">Résumé de session</div>', unsafe_allow_html=True)
 
         if resume_key not in st.session_state:
             if st.button("Générer le résumé avec Lumi", key="gen_resume", use_container_width=True):
-                # Compiler toutes les données
                 all_notes = get_notes(sid)
                 msgs = get_chat_messages(sid)
                 notes_str = "\n".join(f"- {n['clean_text']}" for n in all_notes) if all_notes else "Aucune note."
                 conv_str  = "\n".join(f"{m['role'].upper()}: {m['content'][:120]}" for m in msgs[-10:]) if msgs else "Aucune conversation."
                 src_str   = src_content[:3000] if src_content else "Aucune source."
-
                 prompt = (f"Session d'étude : '{title}'\n\n"
                     f"SOURCES :\n{src_str}\n\n"
                     f"CONVERSATION AVEC LUMI :\n{conv_str}\n\n"
@@ -549,7 +532,6 @@ def show():
                     "Génère un résumé complet et structuré de cette session d'étude en français. "
                     "Inclus : les points clés appris, les questions posées, les lacunes identifiées, "
                     "et 3 points à retenir absolument. Sois précis et utile. 200-300 mots.")
-
                 with st.spinner("Lumi rédige ton résumé..."):
                     try:
                         r = _get_groq().chat.completions.create(
@@ -565,8 +547,6 @@ def show():
             resume_text = st.session_state[resume_key]
             st.markdown(f'<div style="background:#13101e;border:1px solid #9b6dff33;border-left:3px solid #9b6dff;border-radius:14px;padding:1.4rem 1.6rem;font-family:Bricolage Grotesque,sans-serif;font-size:0.88rem;color:#e0d8ff;line-height:1.85;white-space:pre-wrap;">{resume_text}</div>', unsafe_allow_html=True)
             st.markdown("<div style='height:0.8rem'></div>", unsafe_allow_html=True)
-
-            # Bouton télécharger
             all_notes = get_notes(sid)
             msgs = get_chat_messages(sid)
             notes_str = "\n".join(f"- {n['clean_text']}" for n in all_notes) if all_notes else "Aucune note."
@@ -578,7 +558,6 @@ def show():
                 + "NOTES\n" + notes_str + "\n\n"
                 + "="*50 + "\n"
                 + "CONVERSATION\n" + conv_str)
-
             st.download_button(
                 label="Télécharger le résumé (.txt)",
                 data=full_doc.encode("utf-8"),
@@ -610,7 +589,7 @@ def show():
                 lumi_mode=vs_snap.get("lumi_mode", False))
             if snap_alert: increment_alert_stat(sid, snap_alert)
 
-    # ── Polling : uniquement si ready ────────────────────────
+    # ── Polling ────────────────────────────────────────────────
     if ready:
         current_count = len(get_chat_messages(sid))
         if current_count != st.session_state.get("_last_msg_count", 0):
